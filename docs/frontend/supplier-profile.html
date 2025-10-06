@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Profile - Vexim Global</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#003366',
+                        gold: '#F2B705',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-50">
+     Navigation 
+    <nav class="bg-primary text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gold rounded-full flex items-center justify-center font-bold text-primary">V</div>
+                    <span class="text-xl font-bold">Vexim Global</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="index.html" class="hover:text-gold transition">Home</a>
+                    <a href="suppliers.html" class="hover:text-gold transition">Find Suppliers</a>
+                    <a href="login.html" class="hover:text-gold transition">Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+     Loading State 
+    <div id="loading" class="container mx-auto px-4 py-12 text-center">
+        <i class="fas fa-spinner fa-spin text-4xl text-primary"></i>
+        <p class="mt-4 text-gray-600">Loading supplier profile...</p>
+    </div>
+
+     Profile Content 
+    <div id="profile-content" class="hidden">
+         Company Header 
+        <section class="bg-white border-b">
+            <div class="container mx-auto px-4 py-8">
+                <div class="flex flex-col md:flex-row items-start gap-6">
+                     Company Logo 
+                    <div class="w-32 h-32 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                        <img id="company-logo" src="/placeholder.svg" alt="Company Logo" class="w-full h-full object-cover">
+                    </div>
+                    
+                     Company Info 
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h1 id="company-name" class="text-3xl font-bold text-primary"></h1>
+                            <span id="verified-badge" class="hidden bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                <i class="fas fa-check-circle"></i> Verified
+                            </span>
+                        </div>
+                        <div class="flex flex-wrap gap-4 text-gray-600 mb-4">
+                            <span><i class="fas fa-industry mr-2"></i><span id="industry"></span></span>
+                            <span><i class="fas fa-map-marker-alt mr-2"></i><span id="location"></span></span>
+                            <span><i class="fas fa-calendar mr-2"></i>Since <span id="year-established"></span></span>
+                        </div>
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="flex text-gold">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="text-gray-600">(<span id="review-count">0</span> reviews)</span>
+                        </div>
+                        <button onclick="showContactForm()" class="bg-gold text-primary px-6 py-3 rounded-lg font-semibold hover:bg-yellow-500 transition">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span data-i18n="profile_contact_btn">Contact This Supplier</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         Main Content 
+        <section class="container mx-auto px-4 py-12">
+            <div class="grid md:grid-cols-3 gap-8">
+                 Left Column 
+                <div class="md:col-span-2 space-y-8">
+                     About Company 
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold text-primary mb-4" data-i18n="profile_about">About Company</h2>
+                        <p id="company-description" class="text-gray-700 leading-relaxed"></p>
+                    </div>
+
+                     Products 
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold text-primary mb-4" data-i18n="profile_products">Products</h2>
+                        <div id="products-grid" class="grid md:grid-cols-2 gap-4">
+                             Products will be inserted here 
+                        </div>
+                    </div>
+
+                     Certificates 
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold text-primary mb-4" data-i18n="profile_certificates">Certificates</h2>
+                        <div id="certificates-grid" class="grid md:grid-cols-3 gap-4">
+                             Certificates will be inserted here 
+                        </div>
+                    </div>
+
+                     Export History Chart 
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold text-primary mb-4" data-i18n="profile_export_history">Export History</h2>
+                        <canvas id="export-chart"></canvas>
+                    </div>
+                </div>
+
+                 Right Column 
+                <div class="space-y-6">
+                     Company Details 
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-primary mb-4">Company Details</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="text-gray-600">Business Type:</span>
+                                <span id="business-type" class="font-semibold"></span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="text-gray-600">Employees:</span>
+                                <span id="employees" class="font-semibold"></span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="text-gray-600">Annual Revenue:</span>
+                                <span id="revenue" class="font-semibold"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Main Markets:</span>
+                                <span id="markets" class="font-semibold"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                     Contact Info (Masked) 
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-primary mb-4">Contact Information</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-start gap-2">
+                                <i class="fas fa-envelope text-gold mt-1"></i>
+                                <span id="masked-email" class="text-gray-600">***@***.com</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i class="fas fa-phone text-gold mt-1"></i>
+                                <span id="masked-phone" class="text-gray-600">+** *** *** ***</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-4">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Contact details are protected. Send an inquiry to connect.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+     Contact Form Modal 
+    <div id="contact-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-primary" data-i18n="contact_title">Contact Supplier</h2>
+                    <button onclick="closeContactForm()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+                <form id="contact-form" onsubmit="submitContactForm(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-i18n="contact_company">Your Company Name</label>
+                            <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-i18n="contact_product">Product of Interest</label>
+                            <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-i18n="contact_quantity">Estimated Quantity</label>
+                            <input type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2" data-i18n="contact_message">Your Message</label>
+                            <textarea rows="4" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-gold text-primary px-6 py-3 rounded-lg font-semibold hover:bg-yellow-500 transition">
+                            <span data-i18n="contact_submit">Send Inquiry</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+     Footer 
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 Vexim Global. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/supplier-profile.js"></script>
+</body>
+</html>
