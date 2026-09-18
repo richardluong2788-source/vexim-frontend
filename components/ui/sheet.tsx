@@ -48,17 +48,25 @@ function SheetContent({
   className,
   children,
   side = 'right',
+  overlayClassName,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: 'top' | 'right' | 'bottom' | 'left'
+  overlayClassName?: string
 }) {
   return (
     <SheetPortal>
-      <SheetOverlay />
+      <SheetOverlay className={overlayClassName} />
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
+          // Base: fixed panel, flex column, with proper padding and scroll handling
+          // p-6 provides default padding so content never sticks to edge (dính sát mép)
+          // gap-4 gives breathing room between header/body/footer when using simple layout
+          // overflow-y-auto allows scrolling when content overflows
+          // For complex layouts like \"Soạn email mở đầu\" composer, override with p-0 gap-0 overflow-hidden
+          // and wrap body in flex-1 overflow-y-auto px-6 py-4
+          'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 p-6 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 overflow-y-auto',
           side === 'right' &&
             'data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm',
           side === 'left' &&
@@ -85,7 +93,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="sheet-header"
-      className={cn('flex flex-col gap-1.5 p-4', className)}
+      className={cn('flex flex-col gap-1.5 shrink-0', className)}
       {...props}
     />
   )
@@ -95,7 +103,7 @@ function SheetFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="sheet-footer"
-      className={cn('mt-auto flex flex-col gap-2 p-4', className)}
+      className={cn('mt-auto flex flex-col gap-2 pt-2 shrink-0', className)}
       {...props}
     />
   )
